@@ -1,47 +1,36 @@
 package com.sandy.productcatalogservice.services;
 
+import com.sandy.productcatalogservice.clients.FakeStoreApiClient;
 import com.sandy.productcatalogservice.dtos.FakeStoreProductDTO;
 import com.sandy.productcatalogservice.exceptions.ProductNotExistException;
 import com.sandy.productcatalogservice.models.Product;
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RequestCallback;
-import org.springframework.web.client.ResponseExtractor;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FakeStoreProductService implements IProductService{
 
     @Autowired
-    private RestTemplate restTemplate;
-
-    public <T> ResponseEntity<T> putForEntity(String url, @Nullable Object request,
-                                               Class<T> responseType, @Nullable Object... uriVariables) throws RestClientException {
-
-        RequestCallback requestCallback = restTemplate.httpEntityCallback(request, responseType);
-        ResponseExtractor<ResponseEntity<T>> responseExtractor = restTemplate.responseEntityExtractor(responseType);
-        return restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor, uriVariables);
-    }
+    FakeStoreApiClient fakeStoreApiClient;
 
     @Override
     public List<Product> getAllProducts() {
         // /products
-        ResponseEntity<FakeStoreProductDTO[]> fakeStoreProductDTOS = restTemplate.getForEntity(
+        ResponseEntity<FakeStoreProductDTO[]> fakeStoreProductDTOS = fakeStoreApiClient.requestForEntity(
+                HttpMethod.GET,
                 "https://fakestoreapi.com/products",
+                null,
                 FakeStoreProductDTO[].class
         );
-        if(fakeStoreProductDTOS.getBody() != null
-        && fakeStoreProductDTOS.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+        if(fakeStoreApiClient.validateResponse(fakeStoreProductDTOS)) {
             List<Product> productList = new ArrayList<>();
-            for (FakeStoreProductDTO fakeStoreProductDTO : fakeStoreProductDTOS.getBody()) {
+            for (FakeStoreProductDTO fakeStoreProductDTO : Objects.requireNonNull(fakeStoreProductDTOS.getBody())) {
                 productList.add(fakeStoreProductDTO.toProduct());
             }
             return productList;
@@ -51,17 +40,15 @@ public class FakeStoreProductService implements IProductService{
 
     @Override
     public Product getProductById(Long id) throws ProductNotExistException {
-        ResponseEntity<FakeStoreProductDTO> fakeStoreProductDTO = restTemplate.getForEntity(
+        ResponseEntity<FakeStoreProductDTO> fakeStoreProductDTO = fakeStoreApiClient.requestForEntity(
+                HttpMethod.GET,
                 "https://fakestoreapi.com/products/{id}",
+                null,
                 FakeStoreProductDTO.class,
                 id
         );
-        if(fakeStoreProductDTO.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
-            if(fakeStoreProductDTO != null) {
-                return fakeStoreProductDTO.getBody().toProduct();
-            } else {
-                throw new ProductNotExistException("Product does not exist");
-            }
+        if(fakeStoreApiClient.validateResponse(fakeStoreProductDTO)) {
+            return Objects.requireNonNull(fakeStoreProductDTO.getBody()).toProduct();
         } else {
             return null;
         }
@@ -75,16 +62,16 @@ public class FakeStoreProductService implements IProductService{
 
     @Override
     public  Product replaceProduct(Product product, Long id) {
-            ResponseEntity<FakeStoreProductDTO> fakeStoreProductDTOResponseEntity = putForEntity(
+            ResponseEntity<FakeStoreProductDTO> fakeStoreProductDTOResponseEntity = fakeStoreApiClient.requestForEntity(
+                    HttpMethod.PUT,
                     "https://fakestoreapi.com/products/{id}",
                     product.toFakeStoreProductDTO(),
                     FakeStoreProductDTO.class,
                     id
             );
 
-            if(fakeStoreProductDTOResponseEntity.getBody() != null
-                    && fakeStoreProductDTOResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
-                    return fakeStoreProductDTOResponseEntity.getBody().toProduct();
+            if(fakeStoreApiClient.validateResponse(fakeStoreProductDTOResponseEntity)) {
+                    return Objects.requireNonNull(fakeStoreProductDTOResponseEntity.getBody()).toProduct();
             }
     return  null;
     }
