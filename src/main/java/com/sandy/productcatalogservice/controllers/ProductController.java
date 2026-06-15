@@ -39,7 +39,7 @@ public class ProductController {
         return null;
     }
 
-    @PutMapping("/product/{id}")
+    @PutMapping("/products/{id}")
     public ProductDTO replaceProduct(@PathVariable("id") Long productId,
                                                                      @RequestBody ProductDTO productDTO) {
 

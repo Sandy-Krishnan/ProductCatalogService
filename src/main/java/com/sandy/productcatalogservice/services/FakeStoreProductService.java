@@ -28,7 +28,7 @@ public class FakeStoreProductService implements IProductService{
 
         RequestCallback requestCallback = restTemplate.httpEntityCallback(request, responseType);
         ResponseExtractor<ResponseEntity<T>> responseExtractor = restTemplate.responseEntityExtractor(responseType);
-        return restTemplate.execute(url, HttpMethod.POST, requestCallback, responseExtractor, uriVariables);
+        return restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor, uriVariables);
     }
 
     @Override
