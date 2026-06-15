@@ -3,10 +3,15 @@ package com.sandy.productcatalogservice.services;
 import com.sandy.productcatalogservice.dtos.FakeStoreProductDTO;
 import com.sandy.productcatalogservice.exceptions.ProductNotExistException;
 import com.sandy.productcatalogservice.models.Product;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -17,6 +22,14 @@ public class FakeStoreProductService implements IProductService{
 
     @Autowired
     private RestTemplate restTemplate;
+
+    public <T> ResponseEntity<T> putForEntity(String url, @Nullable Object request,
+                                               Class<T> responseType, @Nullable Object... uriVariables) throws RestClientException {
+
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(request, responseType);
+        ResponseExtractor<ResponseEntity<T>> responseExtractor = restTemplate.responseEntityExtractor(responseType);
+        return restTemplate.execute(url, HttpMethod.POST, requestCallback, responseExtractor, uriVariables);
+    }
 
     @Override
     public List<Product> getAllProducts() {
@@ -58,5 +71,21 @@ public class FakeStoreProductService implements IProductService{
     @Override
     public Product createProduct(Product product) {
         return null;
+    }
+
+    @Override
+    public  Product replaceProduct(Product product, Long id) {
+            ResponseEntity<FakeStoreProductDTO> fakeStoreProductDTOResponseEntity = putForEntity(
+                    "https://fakestoreapi.com/products/{id}",
+                    product.toFakeStoreProductDTO(),
+                    FakeStoreProductDTO.class,
+                    id
+            );
+
+            if(fakeStoreProductDTOResponseEntity.getBody() != null
+                    && fakeStoreProductDTOResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+                    return fakeStoreProductDTOResponseEntity.getBody().toProduct();
+            }
+    return  null;
     }
 }

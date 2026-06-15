@@ -1,5 +1,8 @@
 package com.sandy.productcatalogservice.dtos;
 
+import com.sandy.productcatalogservice.models.Category;
+import com.sandy.productcatalogservice.models.Product;
+
 public class ProductDTO {
 
     private String name;
@@ -7,6 +10,23 @@ public class ProductDTO {
     private double price;
     private String imageUrl;
     private CategoryDTO categoryName;
+
+    public Product toProduct() {
+        Product product = new Product();
+        product.setName(this.name);
+        product.setPrice(this.price);
+        product.setImageUrl(this.imageUrl);
+        product.setDescription(this.description);
+
+        CategoryDTO categoryDTO = this.categoryName;
+        if(categoryDTO != null) {
+            Category category = new Category();
+            category.setName(categoryDTO.getName());
+            category.setDescription(categoryDTO.getDescription());
+            product.setCategory(category);
+        }
+        return product;
+    }
 
     public String getName() {
         return name;

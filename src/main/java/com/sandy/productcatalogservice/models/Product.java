@@ -1,6 +1,7 @@
 package com.sandy.productcatalogservice.models;
 
 import com.sandy.productcatalogservice.dtos.CategoryDTO;
+import com.sandy.productcatalogservice.dtos.FakeStoreProductDTO;
 import com.sandy.productcatalogservice.dtos.ProductDTO;
 
 public class Product extends BaseModel {
@@ -26,6 +27,17 @@ public class Product extends BaseModel {
         productDTO.setCategoryName(categoryDTO);
 
         return productDTO;
+    }
+
+    public FakeStoreProductDTO toFakeStoreProductDTO() {
+        FakeStoreProductDTO fakeStoreProductDTO = new FakeStoreProductDTO();
+        fakeStoreProductDTO.setTitle(this.name);
+        fakeStoreProductDTO.setId(this.getId());
+        fakeStoreProductDTO.setCategory(this.category.getName());
+        fakeStoreProductDTO.setPrice(this.price);
+        fakeStoreProductDTO.setDescription(this.description);
+        fakeStoreProductDTO.setImage(this.imageUrl);
+        return fakeStoreProductDTO;
     }
 
     public String getName() {

@@ -12,4 +12,6 @@ public interface IProductService {
     Product getProductById(Long id) throws ProductNotExistException;
 
     Product createProduct(Product product);
+
+    Product replaceProduct(Product product, Long id);
 }
