@@ -75,4 +75,9 @@ public class FakeStoreProductService implements IProductService{
             }
     return  null;
     }
+
+    @Override
+    public boolean deleteProductById(Long id) {
+        return false;
+    }
 }

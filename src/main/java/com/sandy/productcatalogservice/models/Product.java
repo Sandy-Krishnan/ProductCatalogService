@@ -3,13 +3,19 @@ package com.sandy.productcatalogservice.models;
 import com.sandy.productcatalogservice.dtos.CategoryDTO;
 import com.sandy.productcatalogservice.dtos.FakeStoreProductDTO;
 import com.sandy.productcatalogservice.dtos.ProductDTO;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
 
+@Entity
 public class Product extends BaseModel {
 
     private String name;
     private String description;
     private double price;
     private String imageUrl;
+    @ManyToOne(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
     private Category category;
 
     public ProductDTO toProductDTO() {

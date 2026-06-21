@@ -5,24 +5,24 @@ import com.sandy.productcatalogservice.exceptions.ProductNotExistException;
 import com.sandy.productcatalogservice.models.Product;
 import com.sandy.productcatalogservice.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class ProductController {
 
     @Autowired
+    @Qualifier("storageProductService")
     private IProductService productService;
 
     @GetMapping("/products")
     public List<ProductDTO> getAllProducts() {
-        return productService.getAllProducts().stream()
-                .map(Product::toProductDTO)
-                .toList();
+        List<Product> productList = productService.getAllProducts();
+        return productList.stream().map(Product::toProductDTO).toList();
     }
 
     @GetMapping("products/{id}")
@@ -33,7 +33,8 @@ public class ProductController {
 
     @PostMapping("/products")
     public ProductDTO createProduct(@RequestBody ProductDTO product) {
-        return null;
+        Product product1 = product.toProduct();
+        return productService.createProduct(product1).toProductDTO();
     }
 
     @PutMapping("/products/{id}")
