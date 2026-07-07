@@ -24,7 +24,11 @@ public class StorageProductService implements IProductService{
     @Override
     public Product getProductById(Long id) throws ProductNotExistException {
         Optional<Product> product = productRepository.findById(id);
-        return product.orElse(null);
+        if(product.isEmpty()) {
+            throw new ProductNotExistException("Product with id " +  id + " does not exist");
+        } else {
+            return product.get();
+        }
     }
 
     @Override

@@ -21,6 +21,6 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(ProductNotExistException.class)
     public ResponseEntity<String> handleProductNotExistException(ProductNotExistException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Something went wrong", HttpStatus.NOT_FOUND);
     }
 }

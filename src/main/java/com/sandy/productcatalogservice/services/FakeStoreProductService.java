@@ -70,6 +70,7 @@ public class FakeStoreProductService implements IProductService{
                     id
             );
 
+
             if(fakeStoreApiClient.validateResponse(fakeStoreProductDTOResponseEntity)) {
                     return Objects.requireNonNull(fakeStoreProductDTOResponseEntity.getBody()).toProduct();
             }

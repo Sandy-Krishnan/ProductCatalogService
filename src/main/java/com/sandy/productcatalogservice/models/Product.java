@@ -18,6 +18,19 @@ public class Product extends BaseModel {
     @ManyToOne(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
     private Category category;
 
+    public Product() {
+
+    }
+
+    public Product(String name, String description, double price, String imageUrl, Category category) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.imageUrl = imageUrl;
+        this.category = category;
+    }
+
+
     public ProductDTO toProductDTO() {
         ProductDTO productDTO = new ProductDTO();
 
